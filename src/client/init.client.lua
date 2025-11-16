@@ -7,6 +7,11 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+-- Load client modules
+local CameraController = require(script.Parent.CameraController)
+local WeaponController = require(script.Parent.WeaponController)
+local HUD = require(script.Parent.HUD)
+
 local player = Players.LocalPlayer
 
 print("===========================================")
@@ -20,9 +25,19 @@ local humanoid = character:WaitForChild("Humanoid")
 
 print("[Client] Character loaded successfully")
 
--- Set up camera for third-person (will be enhanced later for shooting)
-local camera = workspace.CurrentCamera
-camera.CameraType = Enum.CameraType.Custom
+-- Initialize HUD
+local hud = HUD.new(player)
+
+-- Initialize third-person camera system
+local cameraController = CameraController.new(player)
+
+-- Initialize weapon system
+local weaponController = WeaponController.new(player, cameraController, hud)
+
+-- Store controllers globally for debugging
+_G.CameraController = cameraController
+_G.WeaponController = weaponController
+_G.HUD = hud
 
 -- Basic spawn message
 local function showWelcomeMessage()
@@ -38,7 +53,7 @@ local function showWelcomeMessage()
 	welcomeLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 	welcomeLabel.TextScaled = true
 	welcomeLabel.Font = Enum.Font.GothamBold
-	welcomeLabel.Text = "Welcome to the Open World!\nExplore the procedurally generated terrain"
+	welcomeLabel.Text = "Welcome to the Open World!\n[Right Click] Aim | [Left Click] Shoot | [R] Reload"
 	welcomeLabel.Parent = screenGui
 
 	-- Fade out after 5 seconds
